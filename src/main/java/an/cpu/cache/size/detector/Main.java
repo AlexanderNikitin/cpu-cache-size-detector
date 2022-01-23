@@ -6,7 +6,7 @@ public class Main {
         cacheSizeDetector.detect();
         int level = 1;
         for (Integer result : cacheSizeDetector.getResults()) {
-            System.err.println("Cache level " + level++ + ": " + result);
+            System.out.println("Probably, the CPU has cache " + level++ + "th level size: " + result);
         }
     }
 }
