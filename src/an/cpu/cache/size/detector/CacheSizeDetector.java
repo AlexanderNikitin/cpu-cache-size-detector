@@ -31,15 +31,36 @@ public class CacheSizeDetector {
         cleanup();
     }
 
+    private long[] collectionToArray(Collection<Long> collection) {
+        int size = collection.size();
+        int i = 0;
+        long[] result = new long[size];
+        for (Long aLong : collection) {
+            result[i++] = aLong;
+        }
+        return result;
+    }
+
+    private long[] handleResult(long[] times) {
+        long min = Long.MAX_VALUE;
+        long[] times2 = new long[times.length];
+        for (int i = times.length - 1; i >= 0; i--) {
+            long t = times[i];
+            if (t < min) {
+                min = t;
+            }
+            times2[i] = min;
+        }
+        return times2;
+    }
+
     private void prepareResult() {
-        List<Long> times = avgTime.keySet().stream().toList();
-        for (int i = 1; i < times.size() - 1; i++) {
-            long t = times.get(i);
-            long t0 = times.get(i - 1);
-            long t1 = times.get(i + 1);
-            if ((t0 * LESS_TIME_FACTOR < t * LAGER_TIME_FACTOR)
-                    && (t * LAGER_TIME_FACTOR < t1 * LESS_TIME_FACTOR)) {
-                caches.add(avgTime.get(t0));
+        long[] times = handleResult(collectionToArray(avgTime.keySet()));
+        for (int i = 1; i < times.length; i++) {
+            long t = times[i];
+            long t0 = times[i - 1];
+            if (LESS_TIME_FACTOR * t0 < LAGER_TIME_FACTOR * t) {
+                caches.add(avgTime.get(times[i - 1]));
             }
         }
     }
@@ -61,7 +82,6 @@ public class CacheSizeDetector {
         long t = System.nanoTime();
         long avg = (t - t0) / a.length;
         avgTime.put(avg, currentDataSize);
-        System.err.println(avg + ": " + currentDataSize);
     }
 
     private void test(int[] a) {
