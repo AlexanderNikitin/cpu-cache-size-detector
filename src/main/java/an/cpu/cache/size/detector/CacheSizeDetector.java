@@ -60,7 +60,7 @@ public class CacheSizeDetector {
             long t = times[i];
             long t0 = times[i - 1];
             if (LESS_TIME_FACTOR * t0 < LAGER_TIME_FACTOR * t) {
-                caches.add(avgTime.get(times[i - 1]));
+                caches.add(avgTime.get(times[i]));
             }
         }
     }
